@@ -24,10 +24,12 @@ try:
         TESTING = True
         ENV = 'development'
 
-    CORE_NODE = environ.get("CORE_NODE")
+    LEADER_NODE = environ.get("LEADER_NODE")
     RELAY_ACCESS_KEY = environ.get("RELAY_ACCESS_KEY")
     RELAY_SECRET_KEY = environ.get("RELAY_SECRET_KEY")
+    RELAY_PUBLIC_IP = environ.get("RELAY_PUBLIC_IP")
 
+    RELAY_ID = f"{RELAY_ACCESS_KEY}:{RELAY_SECRET_KEY}@{RELAY_PUBLIC_IP}"
 except Exception as e:
     print(f"Error on reading global config: {str(e)}")
     exit(1)
