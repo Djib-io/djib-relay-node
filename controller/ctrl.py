@@ -2,8 +2,10 @@
 master controller
 """
 
-from flask import Response, request
 from flask import Blueprint
+from flask import request, jsonify
+
+from libs.helper import propagate_to_chain, log_rpc_call
 
 api = Blueprint("RELAY API", __name__, url_prefix="/")
 
@@ -13,6 +15,6 @@ def index():
     """ flask dispatcher for controlling rpc requests
         @return: Response
     """
+    log_rpc_call("query")
     req = request.get_data().decode()
-
-    return Response(None, content_type="application/json")
+    return jsonify(propagate_to_chain(req))

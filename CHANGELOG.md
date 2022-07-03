@@ -14,3 +14,4 @@ Additional labels for pre-release and build metadata are available as extensions
 - Add deployment files
 - Add envs and configs
 - Add controllers
+- Add on-chain propagation methods
