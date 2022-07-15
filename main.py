@@ -9,9 +9,8 @@ import requests
 from flask import Flask, has_request_context, request
 from flask_cors import CORS
 
-from controller.ctrl import api
-import socket
 from config.errors import ErrorMessages
+from controller.ctrl import api
 
 
 class RequestFormatter(logging.Formatter):
