@@ -61,15 +61,10 @@ def propagate_to_chain(body: str):
     if (json_obj := deserialize(body)) is None:
         current_app.logger.error(f"Error, ParseError, Body: {body}")
         return response_error(error_dict=ErrorMessages.ParseError)
-    ip, agent = get_ip_and_agent()
-    json_obj['params'].append({
-        "relay_id": RELAY_ID,
-        "client_ip": ip,
-        "client_agent": agent
-    })
+    # ip, agent = get_ip_and_agent()
+    json_obj['params'][0] = f"{json_obj['params'][0]}@{RELAY_ID}"
     try:
-        chain_data = json.dumps(json_obj)
-        chain_response = post(LEADER_NODE, json=chain_data).json()
+        chain_response = post(LEADER_NODE, json=json_obj).json()
         if "error" in chain_response:
             return response_error(chain_response['error'], chain_response['id'])
         return response_success(chain_response['result'], chain_response['id'])
@@ -85,13 +80,13 @@ def deserialize(json_str: str) -> dict:
     """
     try:
         obj = json.loads(json_str)
+        if "jsonrpc" not in obj or not isinstance(obj['jsonrpc'], str) or obj['jsonrpc'] != '2.0':
+            return None
         if "id" not in obj or not isinstance(obj['id'], int):
             return None
         if "method" not in obj or not isinstance(obj['method'], str):
             return None
-        if "params" not in obj or not isinstance(obj['params'], list):
-            return None
-        if "jsonrpc" not in obj or not isinstance(obj['jsonrpc'], str) or obj['jsonrpc'] != '2.0':
+        if "params" not in obj or not isinstance(obj['params'], list) or len(obj['params']) == 0:
             return None
         return obj
     except Exception as e:
