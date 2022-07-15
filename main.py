@@ -5,10 +5,13 @@ main application source
 import logging
 import sys
 
+import requests
 from flask import Flask, has_request_context, request
 from flask_cors import CORS
 
 from controller.ctrl import api
+import socket
+from config.errors import ErrorMessages
 
 
 class RequestFormatter(logging.Formatter):
@@ -49,10 +52,7 @@ def create_server():
     def page_not_found(e):
         return {
                    "jsonrpc": "2.0",
-                   "error": {
-                       "code": 32601,
-                       "message": "Method not found"
-                   },
+                   "error": ErrorMessages.MethodNotFound,
                    "id_": 0
                }, 200
 
@@ -60,24 +60,18 @@ def create_server():
     def invalid_param(e):
         return {
                    "jsonrpc": "2.0",
-                   "error": {
-                       "code": 32600,
-                       "message": "Invalid request body content"
-                   },
+                   "error": ErrorMessages.InvalidRequest,
                    "id_": 0
-               }, 400
+               }, 200
 
     @server.errorhandler(500)
     def internal_error(e):
         server.logger.error(str(e))
         return {
                    "jsonrpc": "2.0",
-                   "error": {
-                       "code": 32603,
-                       "message": "Internal Error!"
-                   },
+                   "error": ErrorMessages.InternalError,
                    "id_": 0
-               }, 500
+               }, 200
 
     server.register_blueprint(api)
     return server
@@ -96,4 +90,5 @@ if __name__ == '__main__':
     handler.setFormatter(formatter)
     app.logger.handlers.clear()
     app.logger.addHandler(handler)
+    print("\n * Machine Public IP: ", requests.get('https://api.ipify.org').text, "\n")
     app.run(host=app.config.get('HOST'), port=app.config.get('PORT'), use_reloader=False)
