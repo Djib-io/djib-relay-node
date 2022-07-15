@@ -1,4 +1,4 @@
-# Djib Relay Node
+# Djib Relay Node RPC API
 
 ## Installation
 
@@ -14,7 +14,7 @@ pip3 install -r requirements.txt
 python3 main.py
 ```
 
-## Deploy
+## Deploy on docker
 ```shell
 bash deploy/build.sh
 ```

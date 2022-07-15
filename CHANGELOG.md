@@ -1,5 +1,5 @@
 # Changelog
-**Djib RPC API** changelog file will be described below based on semi versioning. 
+**Djib Relay Node RPC API** changelog file will be described below based on semi versioning. 
 Given a version number MAJOR.MINOR.PATCH, increment the:
 - MAJOR version changes when we make incompatible API 
 - MINOR version changes when we add functionality in a backwards compatible manner
