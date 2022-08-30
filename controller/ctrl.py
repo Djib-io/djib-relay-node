@@ -10,6 +10,11 @@ from libs.helper import propagate_to_chain, log_rpc_call
 api = Blueprint("RELAY API", __name__, url_prefix="/")
 
 
+@api.route("/health", methods=["POST", "GET"])
+def health():
+    return "ok", 200
+
+
 @api.route("/", methods=["POST"])
 def index():
     """ flask dispatcher for controlling rpc requests
