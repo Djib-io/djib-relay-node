@@ -3,10 +3,14 @@ from typing import Tuple
 
 import flask
 from flask import current_app
-from requests import post
+from requests import post, get
 
-from config.app import LEADER_NODE, RELAY_ID
+from config.app import PEERS_ENDPOINT, RELAY_ID
 from config.errors import *
+
+import random
+
+CORE_NODE = ""
 
 
 def log_rpc_call(name: str):
@@ -64,12 +68,13 @@ def propagate_to_chain(body: str):
     # ip, agent = get_ip_and_agent()
     json_obj['params'][0] = f"{json_obj['params'][0]}@{RELAY_ID}"
     try:
-        chain_response = post(LEADER_NODE, json=json_obj).json()
+        chain_response = post(get_leader(), json=json_obj).json()
         if "error" in chain_response:
             return response_error(chain_response['error'], chain_response['id'])
         return response_success(chain_response['result'], chain_response['id'])
     except Exception as e:
         current_app.logger.critical(str(e))
+        get_leader(renew=True)
         return response_error(error_dict=ErrorMessages.ParseError)
 
 
@@ -92,3 +97,24 @@ def deserialize(json_str: str) -> dict:
     except Exception as e:
         current_app.logger.error(f"cannot serialize json_str({json_str}) to dict: {str(e)}")
         return None
+
+
+def get_leader(renew=False):
+    try:
+        global CORE_NODE
+        if CORE_NODE != "" and not renew:
+            return CORE_NODE
+        res = get(PEERS_ENDPOINT)
+        if res.status_code >= 500:
+            raise Exception(f"{PEERS_ENDPOINT} is DOWN!")
+        if res.status_code >= 400:
+            raise Exception("Bad request!")
+        if res.status_code == 200:
+            CORE_NODE = random.choice(res.json())['dn']
+            print(CORE_NODE)
+            return CORE_NODE
+        raise Exception("Unknown Error!")
+    except Exception as e:
+        raise e
+
+

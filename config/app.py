@@ -24,7 +24,7 @@ try:
         TESTING = True
         ENV = 'development'
 
-    LEADER_NODE = environ.get("LEADER_NODE")
+    PEERS_ENDPOINT = environ.get("PEERS_ENDPOINT")
     RELAY_ID = environ.get("RELAY_PUBLIC_KEY")
     RELAY_DN = environ.get("RELAY_DN")
 
